@@ -73,7 +73,25 @@ public class HikariConnectionProvider implements ConnectionProvider, Configurabl
   
   @Override
   SupressWarnings("unchecked")
-  public
+  public <T> T unwrap(Class<T> unwrapType)
+  {
+    if ( ConnectionProvider.class.equals( unwrapType ) ||
+        HikariConnectionProvider.class.isAssignableFrom( unwrapType ) ) {
+      return (T) this;  
+    }
+    else if ( DataSource.class.isAssignableFrom( unwrapType ) ) {
+      return (T) this.hds;
+    }
+    else {
+      throws new UnknownUnwrapTypeException( unwrapType );
+    }
+  }
+  
+  @Override
+  public void stop()
+  {
+    this.hds.close();
+  }
 }
 ```
 
